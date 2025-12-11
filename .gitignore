@@ -1,0 +1,11 @@
+# Зависимости, устанавливаемые npm
+/node_modules
+
+# Секретные ключи
+.env
+.env.local 
+.env.*.local
+
+# Локальные файлы билда Vite
+/dist
+/.vite
