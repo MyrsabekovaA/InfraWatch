@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import type { User } from '@supabase/supabase-js';
 
 export function useAuth() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -13,14 +14,14 @@ export function useAuth() {
         });
 
         // подписка на изменения (login/logout)
-        const {data: subscription} = supabase.auth.onAuthStateChange(
+        const {data: {subscription}} = supabase.auth.onAuthStateChange(
             (_event, session) => {
                 setUser(session?.user ?? null);
             }
         );
 
         return () => {
-            subscription.subscription.unsubscribe();
+            subscription?.unsubscribe();
         };
     }, []);
 

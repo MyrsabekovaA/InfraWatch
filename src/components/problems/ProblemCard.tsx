@@ -28,7 +28,7 @@ export default function ProblemCard({
 
     return (
         <div className="border border-gray-200 rounded-xl p-4 shadow-md bg-white hover:shadow-lg transition duration-300">
-            {/* картинка */}
+            {}
             {image && (
                 <img
                     src={image}
@@ -37,7 +37,7 @@ export default function ProblemCard({
                 />
             )}
 
-            {/* заголовок + статус */}
+            {}
             <div className="flex justify-between items-start mb-2">
                 <h2 className="text-lg font-semibold text-gray-800 pr-2">{title}</h2>
 
@@ -48,10 +48,10 @@ export default function ProblemCard({
         </span>
             </div>
 
-            {/* описание */}
+                {}
             <p className="text-gray-600 text-sm mb-3 line-clamp-2">{description}</p>
 
-            {/* низ: голоса + кнопка */}
+            {}
             <div className="flex items-center justify-between text-sm font-medium text-gray-500">
                 <div className="flex items-center">
           <span role="img" aria-label="votes" className="mr-1">
