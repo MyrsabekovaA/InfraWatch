@@ -81,13 +81,19 @@ export default function AdminPanel() {
 
   const handleStatusChange = async (id: string, newStat: string) => {
     try {
-      const { error: updateError } = await supabase
+      const { data, error: updateError } = await supabase
         .from('problems')
         .update({ status: newStat })
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (updateError) {
         alert('Ошибка: ' + updateError.message);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        alert('Не удалось обновить статус. Проверьте права доступа.');
         return;
       }
 
@@ -105,7 +111,7 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="px-4 py-6 md:px-8 md:py-8 max-w-7xl mx-auto">
-        {}
+        { }
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-1 md:mb-2">
             Админ-панель
@@ -115,7 +121,7 @@ export default function AdminPanel() {
           </p>
         </div>
 
-        {}
+        { }
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 mb-6 md:mb-8">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-3 md:p-4 rounded-lg border border-blue-200">
             <p className="text-xs md:text-sm font-semibold text-blue-700">Всего</p>
@@ -149,10 +155,10 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        {}
+        { }
         <div className="bg-white p-4 md:p-6 rounded-lg border-2 border-gray-300 mb-6 md:mb-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            {   }
+            { }
             <div>
               <label className="block text-sm md:text-base font-bold text-gray-900 mb-3">
                 📊 Статус
@@ -173,7 +179,7 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {}
+            { }
             <div>
               <label className="block text-sm md:text-base font-bold text-gray-900 mb-3">
                 🏷️ Категория
@@ -196,7 +202,7 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        {}
+        { }
         {error && (
           <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6 text-red-700">
             <p className="font-medium">{error}</p>
@@ -209,7 +215,7 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {}
+        { }
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin text-4xl mb-3">⏳</div>
@@ -217,7 +223,7 @@ export default function AdminPanel() {
           </div>
         ) : (
           <div className="grid lg:grid-cols-3 gap-6">
-            {}
+            { }
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg border border-gray-300 overflow-hidden shadow-md">
                 {filteredProblems.length === 0 ? (
@@ -226,7 +232,7 @@ export default function AdminPanel() {
                   </div>
                 ) : (
                   <>
-                    {}
+                    { }
                     <div className="md:hidden space-y-3 p-3">
                       {filteredProblems.map((problem) => (
                         <div
@@ -239,15 +245,14 @@ export default function AdminPanel() {
                               {problem.title}
                             </h3>
                             <span
-                              className={`flex-shrink-0 px-2 py-1 rounded text-xs font-bold text-white whitespace-nowrap ${
-                                problem.status === 'новая'
+                              className={`flex-shrink-0 px-2 py-1 rounded text-xs font-bold text-white whitespace-nowrap ${problem.status === 'новая'
                                   ? 'bg-red-500'
                                   : problem.status === 'принято'
-                                  ? 'bg-orange-400'
-                                  : problem.status === 'в_работе'
-                                  ? 'bg-blue-500'
-                                  : 'bg-green-500'
-                              }`}
+                                    ? 'bg-orange-400'
+                                    : problem.status === 'в_работе'
+                                      ? 'bg-blue-500'
+                                      : 'bg-green-500'
+                                }`}
                             >
                               {problem.status}
                             </span>
@@ -260,7 +265,7 @@ export default function AdminPanel() {
                       ))}
                     </div>
 
-                    {}
+                    { }
                     <div className="hidden md:block overflow-x-auto">
                       <table className="w-full">
                         <thead className="bg-gray-100 border-b-2 border-gray-300">
@@ -295,15 +300,14 @@ export default function AdminPanel() {
                               </td>
                               <td className="px-4 py-3 text-sm">
                                 <span
-                                  className={`px-3 py-1 rounded-full text-xs font-bold text-white ${
-                                    problem.status === 'новая'
+                                  className={`px-3 py-1 rounded-full text-xs font-bold text-white ${problem.status === 'новая'
                                       ? 'bg-red-500'
                                       : problem.status === 'принято'
-                                      ? 'bg-orange-400'
-                                      : problem.status === 'в_работе'
-                                      ? 'bg-blue-500'
-                                      : 'bg-green-500'
-                                  }`}
+                                        ? 'bg-orange-400'
+                                        : problem.status === 'в_работе'
+                                          ? 'bg-blue-500'
+                                          : 'bg-green-500'
+                                    }`}
                                 >
                                   {problem.status}
                                 </span>
@@ -321,7 +325,7 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {}
+            { }
             {selectedProblem && (
               <div className="bg-white rounded-lg border-2 border-blue-400 p-4 md:p-6 h-fit sticky top-4 shadow-lg">
                 <div className="mb-4">
@@ -354,15 +358,14 @@ export default function AdminPanel() {
                   <div className="flex justify-between text-xs md:text-sm">
                     <span className="font-bold text-gray-900">Статус:</span>
                     <span
-                      className={`px-2 py-1 rounded text-xs font-bold text-white ${
-                        selectedProblem.status === 'новая'
+                      className={`px-2 py-1 rounded text-xs font-bold text-white ${selectedProblem.status === 'новая'
                           ? 'bg-red-500'
                           : selectedProblem.status === 'принято'
-                          ? 'bg-orange-400'
-                          : selectedProblem.status === 'в_работе'
-                          ? 'bg-blue-500'
-                          : 'bg-green-500'
-                      }`}
+                            ? 'bg-orange-400'
+                            : selectedProblem.status === 'в_работе'
+                              ? 'bg-blue-500'
+                              : 'bg-green-500'
+                        }`}
                     >
                       {selectedProblem.status}
                     </span>

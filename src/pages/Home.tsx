@@ -33,7 +33,7 @@ type Problem = {
   category: string;
 };
 
-export default function Home() {
+export default function Home({ isMobileMenuOpen }: { isMobileMenuOpen?: boolean }) {
   const [problems, setProblems] = useState<Problem[]>([]);
   const [filteredProblems, setFilteredProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -186,7 +186,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="w-full h-64 md:h-96 border-2 border-gray-300 shadow-md rounded-lg overflow-hidden">
+        <div className={`w-full h-64 md:h-96 border-2 border-gray-300 shadow-md rounded-lg overflow-hidden ${isMobileMenuOpen ? 'hidden' : ''}`}>
           <ProblemsMap problems={problems} />
         </div>
 
@@ -210,11 +210,10 @@ export default function Home() {
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-3 py-1 rounded-full text-xs md:text-sm transition ${
-                        selectedCategory === cat
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs md:text-sm transition ${selectedCategory === cat
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
                     >
                       {cat}
                     </button>
@@ -231,19 +230,17 @@ export default function Home() {
                     <button
                       key={status}
                       onClick={() => toggleStatus(status)}
-                      className={`px-3 py-1 rounded-full text-xs md:text-sm transition font-medium ${
-                        selectedStatuses.includes(status)
-                          ? "ring-2 ring-offset-1"
-                          : "opacity-70"
-                      } ${
-                        status === "новая"
+                      className={`px-3 py-1 rounded-full text-xs md:text-sm transition font-medium ${selectedStatuses.includes(status)
+                        ? "ring-2 ring-offset-1"
+                        : "opacity-70"
+                        } ${status === "новая"
                           ? "bg-red-500 text-white"
                           : status === "принято"
-                          ? "bg-orange-400 text-white"
-                          : status === "в_работе"
-                          ? "bg-blue-500 text-white"
-                          : "bg-green-500 text-white"
-                      }`}
+                            ? "bg-orange-400 text-white"
+                            : status === "в_работе"
+                              ? "bg-blue-500 text-white"
+                              : "bg-green-500 text-white"
+                        }`}
                     >
                       {status}
                     </button>

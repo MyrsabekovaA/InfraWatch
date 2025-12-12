@@ -7,14 +7,14 @@ export function useAuth() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // начальное состояние
-        supabase.auth.getSession().then(({data}) => {
+
+        supabase.auth.getSession().then(({ data }) => {
             setUser(data.session?.user ?? null);
             setLoading(false);
         });
 
-        // подписка на изменения (login/logout)
-        const {data: {subscription}} = supabase.auth.onAuthStateChange(
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (_event, session) => {
                 setUser(session?.user ?? null);
             }
@@ -25,5 +25,5 @@ export function useAuth() {
         };
     }, []);
 
-    return {user, loading};
+    return { user, loading };
 }

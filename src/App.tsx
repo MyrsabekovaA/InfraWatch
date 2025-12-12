@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import AddProblemScreen from './pages/AddProblemScreen';
 import ModerationPanel from './pages/ModerationPanel';
 import AdminPanel from './pages/AdminPanel';
+import Reports from './pages/Reports';
 import AccessDenied from './pages/AccessDenied';
 import { useAuth } from './hooks/useAuth';
 import { useEffect, useState } from 'react';
@@ -47,7 +48,7 @@ function RoleProtectedRoute({ children, role }: { children: React.ReactNode; rol
           .select('role')
           .eq('id', user.id)
           .single();
-        
+
         if (error) {
           console.error('Error fetching role:', error);
           setUserRole(null);
@@ -90,11 +91,13 @@ function RoleProtectedRoute({ children, role }: { children: React.ReactNode; rol
 }
 
 export default function App() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <Router>
-      <Header />
+      <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home isMobileMenuOpen={mobileMenuOpen} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
@@ -103,6 +106,14 @@ export default function App() {
             <ProtectedRoute>
               <AddProblemScreen />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <RoleProtectedRoute role="org">
+              <Reports />
+            </RoleProtectedRoute>
           }
         />
         <Route

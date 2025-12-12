@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Shield } from "lucide-react";
+import { Mail, Lock, Shield } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 
 type Role = "user" | "org";
@@ -143,11 +143,10 @@ export default function Register() {
             />
             {password && (
               <p
-                className={`text-xs mt-1 ${
-                  password.length >= 6
+                className={`text-xs mt-1 ${password.length >= 6
                     ? "text-green-600"
                     : "text-orange-600"
-                }`}
+                  }`}
               >
                 {password.length >= 6
                   ? "✓ Пароль надежный"
@@ -171,11 +170,10 @@ export default function Register() {
             />
             {confirmPassword && password && (
               <p
-                className={`text-xs mt-1 ${
-                  password === confirmPassword
+                className={`text-xs mt-1 ${password === confirmPassword
                     ? "text-green-600"
                     : "text-red-600"
-                }`}
+                  }`}
               >
                 {password === confirmPassword
                   ? "✓ Пароли совпадают"

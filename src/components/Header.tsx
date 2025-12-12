@@ -4,11 +4,15 @@ import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabaseClient";
 import { useEffect, useState } from "react";
 
-export default function Header() {
+type HeaderProps = {
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
+};
+
+export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProps) {
   const { user, loading } = useAuth();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [roleLoading, setRoleLoading] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,6 +89,13 @@ export default function Header() {
                     Модерация
                   </Link>
                   <Link
+                    to="/reports"
+                    className="flex items-center gap-2 px-3 py-2 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 transition text-sm"
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    Отчеты
+                  </Link>
+                  <Link
                     to="/admin"
                     className="flex items-center gap-2 px-3 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition text-sm"
                   >
@@ -142,81 +153,116 @@ export default function Header() {
         </button>
       </nav>
 
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-gradient-to-b from-blue-600 to-indigo-700 border-t border-blue-500 px-4 py-4 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
-          {loading || roleLoading ? (
-            <div className="text-blue-100 text-sm py-2">⏳ Загрузка...</div>
-          ) : user ? (
-            <>
-              <div className="bg-blue-500 bg-opacity-30 px-3 py-2 rounded-lg mb-3">
-                <p className="text-white text-sm font-medium truncate">
-                  {user.email}
-                </p>
-                {userRole && (
-                  <p className="text-blue-100 text-xs mt-1">
-                    {userRole === "org" ? "🏢 ЖКХ/Организация" : "👤 Житель"}
-                  </p>
-                )}
+
+
+
+      {
+        mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-[1000] backdrop-blur-sm md:hidden animate-in fade-in duration-200"
+            onClick={closeMobileMenu}
+          />
+        )
+      }
+
+
+      <div className={`fixed inset-y-0 right-0 z-[1001] w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-bold text-gray-800">Меню</h2>
+            <button
+              onClick={closeMobileMenu}
+              className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {loading || roleLoading ? (
+              <div className="text-gray-500 text-sm py-2 text-center">⏳ Загрузка...</div>
+            ) : user ? (
+              <>
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                  <p className="text-gray-900 font-medium truncate">{user.email}</p>
+                  {userRole && (
+                    <p className="text-blue-600 text-xs mt-1 font-semibold">
+                      {userRole === "org" ? "🏢 ЖКХ/Организация" : "👤 Житель"}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Link
+                    to="/add"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-blue-50 hover:text-blue-600 transition"
+                  >
+                    <Plus className="w-5 h-5 text-blue-500" />
+                    <span>Сообщить проблему</span>
+                  </Link>
+
+                  {userRole === "org" && (
+                    <>
+                      <Link
+                        to="/moderation"
+                        onClick={closeMobileMenu}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-orange-50 hover:text-orange-600 transition"
+                      >
+                        <BarChart3 className="w-5 h-5 text-orange-500" />
+                        <span>Модерация</span>
+                      </Link>
+                      <Link
+                        to="/reports"
+                        onClick={closeMobileMenu}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition"
+                      >
+                        <BarChart3 className="w-5 h-5 text-indigo-500" />
+                        <span>Отчеты</span>
+                      </Link>
+                      <Link
+                        to="/admin"
+                        onClick={closeMobileMenu}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-red-50 hover:text-red-600 transition"
+                      >
+                        <Shield className="w-5 h-5 text-red-500" />
+                        <span>Админ-панель</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t mt-auto">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-red-600 font-medium rounded-lg hover:bg-red-50 transition"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Выход</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-3">
+                <Link
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-gray-900 font-semibold rounded-lg hover:bg-gray-200 transition"
+                >
+                  Вход
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg"
+                >
+                  Регистрация
+                </Link>
               </div>
-
-              <Link
-                to="/add"
-                onClick={closeMobileMenu}
-                className="flex items-center gap-3 w-full px-4 py-3 text-white font-semibold rounded-lg hover:bg-blue-500 transition"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Сообщить проблему</span>
-              </Link>
-
-              {userRole === "org" && (
-                <>
-                  <Link
-                    to="/moderation"
-                    onClick={closeMobileMenu}
-                    className="flex items-center gap-3 w-full px-4 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition"
-                  >
-                    <BarChart3 className="w-5 h-5" />
-                    <span>Модерация</span>
-                  </Link>
-                  <Link
-                    to="/admin"
-                    onClick={closeMobileMenu}
-                    className="flex items-center gap-3 w-full px-4 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition"
-                  >
-                    <Shield className="w-5 h-5" />
-                    <span>Админ-панель</span>
-                  </Link>
-                </>
-              )}
-
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-3 w-full px-4 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition mt-3"
-              >
-                <LogOut className="w-5 h-5" />
-                <span>Выход</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                onClick={closeMobileMenu}
-                className="flex items-center justify-center w-full px-4 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition"
-              >
-                Вход
-              </Link>
-              <Link
-                to="/register"
-                onClick={closeMobileMenu}
-                className="flex items-center justify-center w-full px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-              >
-                Регистрация
-              </Link>
-            </>
-          )}
+            )}
+          </div>
         </div>
-      )}
-    </header>
+      </div>
+    </header >
   );
 }

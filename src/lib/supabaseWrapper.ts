@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 import { mockData, type Problem } from './mockData';
 
-const USE_MOCK_MODE = import.meta.env.MODE === 'development';
+
 
 export const supabaseWrapper = {
   getProblems: async () => {

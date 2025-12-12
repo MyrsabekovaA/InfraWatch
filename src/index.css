@@ -16,7 +16,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Оптимизация для мобильных */
+
 @media (max-width: 768px) {
   :root {
     font-size: 14px;
@@ -28,14 +28,14 @@
   }
 
   button {
-    min-height: 44px; /* Правило Apple для сенсорных кнопок */
+    min-height: 44px;
   }
 
   input,
   select,
   textarea {
     min-height: 44px;
-    font-size: 16px; /* Предотвращает увеличение при фокусе на iOS */
+    font-size: 16px;
   }
 }
 
@@ -54,8 +54,9 @@
   }
 }
 
-/* Улучшенные фокусные состояния для доступности */
+
 @layer components {
+
   input:focus,
   select:focus,
   textarea:focus {
@@ -63,12 +64,13 @@
   }
 }
 
-/* Анимация для мобильного меню */
+
 @keyframes slideInFromTop {
   from {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -79,8 +81,7 @@
   animation: slideInFromTop 0.2s ease-out;
 }
 
-/* Скрыть скролл когда открыто мобильное меню */
+
 body.mobile-menu-open {
   overflow: hidden;
 }
-

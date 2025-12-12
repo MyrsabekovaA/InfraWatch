@@ -24,7 +24,7 @@ export default function ModerationPanel() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const { data, error: fetchError } = await supabase
         .from('problems')
         .select('*')
@@ -54,13 +54,20 @@ export default function ModerationPanel() {
   const handleApprove = async (id: string) => {
     setProcessing(id);
     try {
-      const { error: updateError } = await supabase
+      const { data, error: updateError } = await supabase
         .from('problems')
         .update({ status: 'принято' })
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (updateError) {
         alert('Ошибка при одобрении: ' + updateError.message);
+        setProcessing(null);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        alert('Не удалось изменить статус. Возможно, нет прав.');
         setProcessing(null);
         return;
       }
@@ -76,13 +83,20 @@ export default function ModerationPanel() {
   const handleReject = async (id: string) => {
     setProcessing(id);
     try {
-      const { error: deleteError } = await supabase
+      const { data, error: deleteError } = await supabase
         .from('problems')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (deleteError) {
         alert('Ошибка при отклонении: ' + deleteError.message);
+        setProcessing(null);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        alert('Не удалось удалить заявку. Возможно, нет прав.');
         setProcessing(null);
         return;
       }
@@ -129,7 +143,7 @@ export default function ModerationPanel() {
               className="bg-white border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-lg transition"
             >
               <div className="grid md:grid-cols-3 gap-4">
-                {/* Фото */}
+
                 {problem.image_url && (
                   <div className="md:col-span-1">
                     <img
@@ -140,7 +154,6 @@ export default function ModerationPanel() {
                   </div>
                 )}
 
-                {/* Информация */}
                 <div className={problem.image_url ? 'md:col-span-2' : 'md:col-span-3'}>
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">
                     {problem.title}
@@ -153,7 +166,7 @@ export default function ModerationPanel() {
                     <span>📅 {new Date(problem.created_at).toLocaleDateString('ru-RU')}</span>
                   </div>
 
-                  {/* Кнопки */}
+                  { }
                   <div className="flex gap-3">
                     <button
                       onClick={() => handleApprove(problem.id)}
