@@ -1,70 +1,140 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Header from './components/Header';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AddProblemScreen from './pages/AddProblemScreen';
-import Home from './pages/Home';
-// import ReportPage from './pages/ReportPage'; // 👈 сделаем-заглушку для отчётов
+import ModerationPanel from './pages/ModerationPanel';
+import AdminPanel from './pages/AdminPanel';
+import Reports from './pages/Reports';
+import AccessDenied from './pages/AccessDenied';
+import { useAuth } from './hooks/useAuth';
+import { useEffect, useState } from 'react';
+import { supabase } from './lib/supabaseClient';
 
-function App() {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
     return (
-        <BrowserRouter>
-            {/* Шапка */}
-            <header className="bg-gray-900 p-4 text-white shadow-2xl sticky top-0 z-10">
-                <div className="container mx-auto flex justify-between items-center">
-                    <Link
-                        to="/"
-                        className="text-xl font-bold text-blue-400 hover:text-blue-300 transition"
-                    >
-                        InfraWatch
-                    </Link>
-                    <nav className="flex space-x-6 text-sm md:text-base">
-                        <Link
-                            to="/add"
-                            className="hover:text-blue-400 transition font-semibold"
-                        >
-                            Сообщить о проблеме
-                        </Link>
-                        <Link
-                            to="/report"
-                            className="hover:text-yellow-400 transition"
-                        >
-                            Отчёт
-                        </Link>
-                        <Link
-                            to="/login"
-                            className="hover:text-green-400 transition"
-                        >
-                            Вход
-                        </Link>
-                        <Link
-                            to="/register"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg transition"
-                        >
-                            Регистрация
-                        </Link>
-                    </nav>
-                </div>
-            </header>
-
-            {/* Маршруты */}
-            <section className="bg-gray-100">
-            <Routes>
-                {/* главная: карта города */}
-                <Route path="/" element={<Home />} />
-
-                {/* страница добавления проблемы */}
-                <Route path="/add" element={<AddProblemScreen />} />
-
-                {/* отчёт / аналитика */}
-                {/*<Route path="/report" element={<ReportPage />} />*/}
-
-                {/* auth */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-            </Routes>
-            </section>
-        </BrowserRouter>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-gray-600">⏳ Загрузка...</p>
+      </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 }
 
-export default App;
+function RoleProtectedRoute({ children, role }: { children: React.ReactNode; role: 'org' | 'user' }) {
+  const { user, loading } = useAuth();
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [roleLoading, setRoleLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) {
+      setRoleLoading(false);
+      return;
+    }
+
+    const fetchRole = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching role:', error);
+          setUserRole(null);
+        } else {
+          console.log('User role:', data?.role);
+          setUserRole(data?.role || null);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        setUserRole(null);
+      } finally {
+        setRoleLoading(false);
+      }
+    };
+
+    fetchRole();
+  }, [user]);
+
+  if (loading || roleLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin text-4xl mb-3">⏳</div>
+          <p className="text-lg text-gray-600">Проверка прав доступа...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (userRole !== role) {
+    console.warn(`Access denied: expected ${role}, got ${userRole}`);
+    return <AccessDenied />;
+  }
+
+  return <>{children}</>;
+}
+
+export default function App() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  return (
+    <Router>
+      <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+      <Routes>
+        <Route path="/" element={<Home isMobileMenuOpen={mobileMenuOpen} />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/add"
+          element={
+            <ProtectedRoute>
+              <AddProblemScreen />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <RoleProtectedRoute role="org">
+              <Reports />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/moderation"
+          element={
+            <RoleProtectedRoute role="org">
+              <ModerationPanel />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RoleProtectedRoute role="org">
+              <AdminPanel />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route path="/access-denied" element={<AccessDenied />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+}
