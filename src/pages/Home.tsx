@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Filter, X } from "lucide-react";
+import { Filter, X, Zap } from "lucide-react";
 import ProblemCard from "../components/problems/ProblemCard";
 import ProblemsMap from "../components/map/ProblemsMap";
 import { supabase } from "../lib/supabaseClient";
@@ -132,77 +132,89 @@ export default function Home({ isMobileMenuOpen }: { isMobileMenuOpen?: boolean 
   };
 
   return (
-    <main className="bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Проблемы города
-          </h1>
-          <p className="text-gray-600 mt-1 text-sm md:text-base">
-            Голосуйте за важные проблемы, чтобы помочь их решению.
-          </p>
+    <main className="bg-gray-50/50 min-h-screen">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
+              Проблемы города
+            </h1>
+            <p className="text-gray-500 mt-2 text-lg">
+              Голосуйте за важные проблемы, чтобы помочь их решению.
+            </p>
+          </div>
+          {user && (
+            <button
+              onClick={() => navigate("/add")}
+              className="hidden md:flex items-center gap-2 px-5 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition shadow-lg shadow-primary-500/20 hover:scale-[1.02]"
+            >
+              <Zap className="w-5 h-5" />
+              Сообщить о проблеме
+            </button>
+          )}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
-          <div className="bg-blue-50 p-2 md:p-3 rounded-lg border border-blue-200">
-            <p className="text-xs md:text-sm font-semibold text-blue-700">
+        {/* Stats Section */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
               Всего
             </p>
-            <p className="text-xl md:text-2xl font-bold text-blue-900">
+            <p className="text-2xl md:text-3xl font-bold text-gray-800 mt-1">
               {stats.total}
             </p>
           </div>
-          <div className="bg-red-50 p-2 md:p-3 rounded-lg border border-red-200">
-            <p className="text-xs md:text-sm font-semibold text-red-700">
+          <div className="bg-red-50/50 p-4 rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-bold text-red-600 uppercase tracking-wider">
               Новые
             </p>
-            <p className="text-xl md:text-2xl font-bold text-red-900">
+            <p className="text-2xl md:text-3xl font-bold text-red-700 mt-1">
               {stats.новая}
             </p>
           </div>
-          <div className="bg-orange-50 p-2 md:p-3 rounded-lg border border-orange-200">
-            <p className="text-xs md:text-sm font-semibold text-orange-700">
+          <div className="bg-orange-50/50 p-4 rounded-2xl border border-orange-100 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-bold text-orange-600 uppercase tracking-wider">
               Принято
             </p>
-            <p className="text-xl md:text-2xl font-bold text-orange-900">
+            <p className="text-2xl md:text-3xl font-bold text-orange-700 mt-1">
               {stats.принято}
             </p>
           </div>
-          <div className="bg-blue-50 p-2 md:p-3 rounded-lg border border-blue-200">
-            <p className="text-xs md:text-sm font-semibold text-blue-700">
+          <div className="bg-primary-50/50 p-4 rounded-2xl border border-primary-100 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-bold text-primary-600 uppercase tracking-wider">
               В работе
             </p>
-            <p className="text-xl md:text-2xl font-bold text-blue-900">
+            <p className="text-2xl md:text-3xl font-bold text-primary-700 mt-1">
               {stats.в_работе}
             </p>
           </div>
-          <div className="bg-green-50 p-2 md:p-3 rounded-lg border border-green-200">
-            <p className="text-xs md:text-sm font-semibold text-green-700">
+          <div className="bg-green-50/50 p-4 rounded-2xl border border-green-100 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-bold text-green-600 uppercase tracking-wider">
               Решено
             </p>
-            <p className="text-xl md:text-2xl font-bold text-green-900">
+            <p className="text-2xl md:text-3xl font-bold text-green-700 mt-1">
               {stats.решено}
             </p>
           </div>
         </div>
 
-        <div className={`w-full h-64 md:h-96 border-2 border-gray-300 shadow-md rounded-lg overflow-hidden ${isMobileMenuOpen ? 'hidden' : ''}`}>
+        <div className={`w-full h-80 md:h-[450px] bg-white border border-gray-200 shadow-xl shadow-gray-200/50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl ${isMobileMenuOpen ? 'hidden' : ''}`}>
           <ProblemsMap problems={problems} />
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm md:text-base"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-200 font-medium rounded-xl hover:bg-gray-50 transition shadow-sm"
           >
-            <Filter className="w-5 h-5" />
-            {showFilters ? "Скрыть фильтры" : "Показать фильтры"}
+            <Filter className="w-5 h-5 text-gray-400" />
+            {showFilters ? "Скрыть фильтры" : "Фильтры и поиск"}
           </button>
 
           {showFilters && (
-            <div className="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-lg shadow-gray-100 space-y-6 animate-in slide-in-from-top-2 duration-300">
               <div>
-                <h3 className="font-semibold text-gray-800 mb-2 text-sm md:text-base">
+                <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wide">
                   Категория
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -210,9 +222,9 @@ export default function Home({ isMobileMenuOpen }: { isMobileMenuOpen?: boolean 
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-3 py-1 rounded-full text-xs md:text-sm transition ${selectedCategory === cat
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedCategory === cat
+                        ? "bg-primary-600 text-white shadow-lg shadow-primary-500/20"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200/50"
                         }`}
                     >
                       {cat}
@@ -222,7 +234,7 @@ export default function Home({ isMobileMenuOpen }: { isMobileMenuOpen?: boolean 
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-800 mb-2 text-sm md:text-base">
+                <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wide">
                   Статус
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -230,15 +242,15 @@ export default function Home({ isMobileMenuOpen }: { isMobileMenuOpen?: boolean 
                     <button
                       key={status}
                       onClick={() => toggleStatus(status)}
-                      className={`px-3 py-1 rounded-full text-xs md:text-sm transition font-medium ${selectedStatuses.includes(status)
-                        ? "ring-2 ring-offset-1"
-                        : "opacity-70"
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedStatuses.includes(status)
+                        ? "ring-2 ring-offset-1 ring-primary-500 shadow-md transform scale-105"
+                        : "opacity-60 grayscale hover:grayscale-0 hover:opacity-100 bg-gray-100"
                         } ${status === "новая"
                           ? "bg-red-500 text-white"
                           : status === "принято"
                             ? "bg-orange-400 text-white"
                             : status === "в_работе"
-                              ? "bg-blue-500 text-white"
+                              ? "bg-primary-500 text-white"
                               : "bg-green-500 text-white"
                         }`}
                     >
@@ -249,62 +261,69 @@ export default function Home({ isMobileMenuOpen }: { isMobileMenuOpen?: boolean 
               </div>
 
               {(selectedCategory !== "Все" || selectedStatuses.length > 0) && (
-                <button
-                  onClick={() => {
-                    setSelectedCategory("Все");
-                    setSelectedStatuses([]);
-                  }}
-                  className="flex items-center gap-2 px-3 py-1 text-xs md:text-sm text-gray-600 hover:text-gray-800 transition"
-                >
-                  <X className="w-4 h-4" />
-                  Очистить фильтры
-                </button>
+                <div className="pt-2 border-t border-gray-100">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory("Все");
+                      setSelectedStatuses([]);
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:text-red-600 font-medium transition hover:bg-red-50 rounded-lg"
+                  >
+                    <X className="w-4 h-4" />
+                    Сбросить все
+                  </button>
+                </div>
               )}
             </div>
           )}
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded text-red-700 text-sm md:text-base">
-            <p className="font-medium">{error}</p>
+          <div className="bg-red-50 border border-red-100 p-4 rounded-xl text-red-800 flex items-center justify-between">
+            <span className="font-medium">{error}</span>
             <button
               onClick={fetchProblems}
-              className="text-xs md:text-sm mt-2 text-red-600 hover:text-red-800 font-semibold"
+              className="px-3 py-1 bg-white border border-red-200 rounded-lg text-sm text-red-600 hover:bg-red-50 transition"
             >
-              Попробовать снова
+              Повторить
             </button>
           </div>
         )}
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin text-4xl">⏳</div>
-            <p className="text-gray-600 mt-3 text-sm md:text-base">
-              Загрузка проблем...
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+            <p className="text-gray-500 mt-4 font-medium">
+              Загружаем проблемы...
             </p>
           </div>
         ) : filteredProblems.length === 0 ? (
-          <div className="text-center py-12 bg-blue-50 rounded-xl">
-            <p className="text-base md:text-lg text-gray-600">
+          <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-gray-300">
+            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Filter className="w-8 h-8 text-gray-300" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Ничего не найдено</h3>
+            <p className="text-gray-500 max-w-sm mx-auto mb-6">
               {problems.length === 0
-                ? "Проблем пока не найдено"
-                : "По выбранным фильтрам ничего не найдено"}
+                ? "В данный момент сообщений о проблемах нет. Будьте первым!"
+                : "По вашим фильтрам ничего не найдено. Попробуйте изменить параметры поиска."}
             </p>
             {user && problems.length === 0 && (
               <button
                 onClick={() => navigate("/add")}
-                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm md:text-base"
+                className="px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition shadow-lg shadow-primary-500/20"
               >
-                ➕ Сообщить первую проблему
+                Сообщить проблему
               </button>
             )}
           </div>
         ) : (
-          <>
-            <p className="text-gray-600 text-xs md:text-sm">
-              Найдено {filteredProblems.length} проблем
-            </p>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-800">Список проблем</h2>
+              <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">{filteredProblems.length}</span>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredProblems.map((problem) => (
                 <ProblemCard
                   key={problem.id}
@@ -317,7 +336,7 @@ export default function Home({ isMobileMenuOpen }: { isMobileMenuOpen?: boolean 
                 />
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
     </main>
